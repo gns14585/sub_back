@@ -1,10 +1,7 @@
 package com.example.subback.mapper;
 
 import com.example.subback.dto.Board;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -15,6 +12,7 @@ public interface BoardMapper {
             INSERT INTO board(title, content, writer)
             VALUES (#{title}, #{content}, #{writer})
             """)
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Board board);
 
     @Select("""
@@ -36,4 +34,14 @@ public interface BoardMapper {
             WHERE id = #{id}
             """)
     int deleteById(Integer id);
+
+    @Update("""
+            UPDATE board
+            SET 
+                title = #{title},
+                content = #{content},
+                writer = #{writer}
+            WHERE id = #{id}
+            """)
+    int updateById(Board board);
 }
