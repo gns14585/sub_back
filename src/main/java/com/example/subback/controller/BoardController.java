@@ -50,12 +50,8 @@ public class BoardController {
     }
 
     @DeleteMapping("remove/{id}")
-    public ResponseEntity remove(@PathVariable Integer id) {
-        if (service.remove(id)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+    public void remove(@PathVariable Integer id) {
+        service.remove(id);
     }
 
     @PutMapping("edit")
