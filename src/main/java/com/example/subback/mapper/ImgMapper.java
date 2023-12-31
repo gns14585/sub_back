@@ -1,7 +1,11 @@
 package com.example.subback.mapper;
 
+import com.example.subback.domain.BoardImg;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface ImgMapper {
@@ -11,4 +15,11 @@ public interface ImgMapper {
             VALUES (#{boardId}, #{name})
             """)
     int insert(Integer boardId, String name);
+
+    @Select("""
+            SELECT id, name
+            FROM boardimg
+            WHERE boardId = #{boardId}
+            """)
+    List<BoardImg> selectNamesByBoardId(Integer boardId);
 }

@@ -16,8 +16,9 @@ public interface BoardMapper {
     int insert(Board board);
 
     @Select("""
-            SELECT id, title, writer, inserted
-            FROM board
+            SELECT b1.id, b1.title, b1.content, b1.writer, b1.inserted
+            FROM board b1 JOIN boardimg b2
+            ON b1.id = b2.boardId
             ORDER BY inserted DESC
             """)
     List<Board> list();

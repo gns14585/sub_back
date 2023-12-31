@@ -1,22 +1,39 @@
 package com.example.subback.service;
 
+import com.example.subback.domain.BoardImg;
 import com.example.subback.dto.Board;
 import com.example.subback.mapper.BoardMapper;
 import com.example.subback.mapper.ImgMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class BoardService {
     private final BoardMapper mapper;
     private final ImgMapper mainImgMapper;
 
-    public boolean save(Board board, MultipartFile[] mainImg) {
+    private final S3Client s3;
+
+    @Value("${image.file.prefix}")
+    private String urlPrefix;
+
+    @Value("${aws3.s3.bucket.name}")
+    private String bucket;
+
+    public boolean save(Board board, MultipartFile[] mainImg) throws IOException {
         int cnt = mapper.insert(board);
 
         // boardFile 테이블에 mainImg 정보 저장
@@ -28,28 +45,23 @@ public class BoardService {
 
             }
         }
-
-
         // 실제 이미지파일 S3 Bucket에 upload
-
 
         return cnt == 1;
     }
 
-    private void upload(Integer boardId, MultipartFile mainImg) {
-        // 파일 저장 경로
-        // C:\Temp\prj1\게시물번호\파일명
-        try {
-            File folder = new File("C:\\Temp\\prj1\\" + boardId);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-            String path = folder.getAbsolutePath() + "\\" + mainImg.getOriginalFilename();
-            File des = new File(path);
-            mainImg.transferTo(des);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void upload(Integer boardId, MultipartFile mainImg) throws IOException {
+
+        String key = "prj1/" + boardId + "/" + mainImg.getOriginalFilename();
+
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .acl(ObjectCannedACL.PUBLIC_READ)
+                .build();
+
+        s3.putObject(objectRequest, RequestBody.fromInputStream(mainImg.getInputStream(), mainImg.getSize()));
+
     }
 
     public boolean validate(Board board) {
@@ -73,7 +85,18 @@ public class BoardService {
     }
 
     public Board get(Integer id) {
-        return mapper.selectById(id);
+        Board board = mapper.selectById(id);
+
+        List<BoardImg> boardImgs = mainImgMapper.selectNamesByBoardId(id);
+
+        for (BoardImg boardImg : boardImgs) {
+            String url = urlPrefix + "prj1/" + id + "/" + boardImg.getName();
+            boardImg.setUrl(url);
+        }
+
+        board.setMainImgs(boardImgs);
+
+        return board;
     }
 
     public boolean remove(Integer id) {

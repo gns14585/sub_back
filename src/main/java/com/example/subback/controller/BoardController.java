@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class BoardController {
 
     @PostMapping("add")
     public ResponseEntity add(Board board,
-                              @RequestParam(value = "mainImg[]", required = false) MultipartFile[] mainImg) {
+                              @RequestParam(value = "mainImg[]", required = false) MultipartFile[] mainImg) throws IOException {
 
 
         // 저장버튼 클릭 시 0.3초 버튼 잠금
