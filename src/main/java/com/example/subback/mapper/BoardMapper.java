@@ -1,5 +1,6 @@
 package com.example.subback.mapper;
 
+import com.example.subback.domain.BoardImg;
 import com.example.subback.dto.Board;
 import org.apache.ibatis.annotations.*;
 
@@ -16,10 +17,11 @@ public interface BoardMapper {
     int insert(Board board);
 
     @Select("""
-            SELECT b1.id, b1.title, b1.content, b1.writer, b1.inserted
-            FROM board b1 JOIN boardimg b2
-            ON b1.id = b2.boardId
-            ORDER BY inserted DESC
+            SELECT b.id, b.title, b.content, b.writer, b.inserted,
+                   CONCAT(#{urlPrefix}, 'prj1/', bi.boardId, '/', bi.name) as imageUrl
+            FROM board b
+            LEFT JOIN boardimg bi ON b.id = bi.boardId
+            ORDER BY b.inserted DESC
             """)
     List<Board> list();
 

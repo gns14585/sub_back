@@ -81,7 +81,14 @@ public class BoardService {
     }
 
     public List<Board> list() {
-        return mapper.list();
+        List<Board> boards = mapper.list();
+        // 각 게시물의 이미지 URL 목록을 가져오는 로직 추가
+        boards.forEach(board -> {
+            List<BoardImg> boardImgs = mainImgMapper.selectNamesByBoardId(board.getId());
+            boardImgs.forEach(img -> img.setUrl(urlPrefix + "prj1/" + board.getId() + "/" + img.getName()));
+            board.setMainImgs(boardImgs); // 각 Board 객체에 이미지 목록을 설정
+        });
+        return boards;
     }
 
     public Board get(Integer id) {
@@ -102,6 +109,7 @@ public class BoardService {
     public boolean remove(Integer id) {
         return mapper.deleteById(id) == 1;
     }
+
 
     public boolean update(Board board) {
         return mapper.updateById(board) == 1;
