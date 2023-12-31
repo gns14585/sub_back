@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -106,8 +107,27 @@ public class BoardService {
         return board;
     }
 
-    public boolean remove(Integer id) {
-        return mapper.deleteById(id) == 1;
+    public void remove(Integer id) {
+
+        deleteMainImg(id);
+
+        mapper.deleteById(id); // 상품삭제
+    }
+
+    private void deleteMainImg(Integer boardId) {
+        List<BoardImg> boardImgs = mainImgMapper.selectNamesByBoardId(boardId);
+
+        for (BoardImg img : boardImgs) {
+            String key = "prj1/" + boardId + "/" + img.getName();
+            DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
+            s3.deleteObject(objectRequest);
+        }
+
+        mainImgMapper.deleteByBoardId(boardId);
+
     }
 
 
