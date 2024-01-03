@@ -1,8 +1,8 @@
 package com.example.subback.service;
 
-import com.example.subback.controller.BoardController;
 import com.example.subback.domain.BoardImg;
 import com.example.subback.domain.Details;
+import com.example.subback.domain.DetailsReqeust;
 import com.example.subback.dto.Board;
 import com.example.subback.mapper.BoardMapper;
 import com.example.subback.mapper.ImgMapper;
@@ -16,11 +16,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +34,7 @@ public class BoardService {
     @Value("${aws3.s3.bucket.name}")
     private String bucket;
 
+    // ------------------------------ 상품 저장 로직 ------------------------------
     public boolean save(Board board, MultipartFile[] mainImg) throws IOException {
         int cnt = mapper.insert(board);
 
@@ -53,7 +51,7 @@ public class BoardService {
 
         return cnt == 1;
     }
-
+    // ------------------------------ 상품 이미지 업로드 로직 ------------------------------
     private void upload(Integer boardId, MultipartFile mainImg) throws IOException {
 
         String key = "prj1/" + boardId + "/" + mainImg.getOriginalFilename();
@@ -65,9 +63,8 @@ public class BoardService {
                 .build();
 
         s3.putObject(objectRequest, RequestBody.fromInputStream(mainImg.getInputStream(), mainImg.getSize()));
-
     }
-
+    // ------------------------------ 상품 저장시 검증 로직 ------------------------------
     public boolean validate(Board board) {
         if (board == null) {
             return false;
@@ -84,6 +81,7 @@ public class BoardService {
         return true;
     }
 
+    // ------------------------------ 상품 리스트 로직 ------------------------------
     public List<Board> list() {
         List<Board> boards = mapper.list();
         // 각 게시물의 이미지 URL 목록을 가져오는 로직 추가
@@ -95,6 +93,7 @@ public class BoardService {
         return boards;
     }
 
+    // ------------------------------ 상품 보기 로직 ------------------------------
     public Board get(Integer id) {
         Board board = mapper.selectById(id);
 
@@ -104,12 +103,11 @@ public class BoardService {
             String url = urlPrefix + "prj1/" + id + "/" + boardImg.getName();
             boardImg.setUrl(url);
         }
-
         board.setMainImgs(boardImgs);
-
         return board;
     }
 
+    // ------------------------------ 상품 삭제 로직 ------------------------------
     public void remove(Integer id) {
 
         deleteMainImg(id);
@@ -117,6 +115,7 @@ public class BoardService {
         mapper.deleteById(id); // 상품삭제
     }
 
+    // ------------------------------ 상품 삭제 시 이미지 삭제 로직 ------------------------------
     private void deleteMainImg(Integer boardId) {
         List<BoardImg> boardImgs = mainImgMapper.selectNamesByBoardId(boardId);
 
@@ -128,36 +127,32 @@ public class BoardService {
                     .build();
             s3.deleteObject(objectRequest);
         }
-
         mainImgMapper.deleteByBoardId(boardId);
-
     }
 
-
+    // ------------------------------ 상품 수정 로직 ------------------------------
     public boolean update(Board board) {
         return mapper.updateById(board) == 1;
     }
 
-    public void addList(BoardController.DetailsReqeust detailsRequest) {
+    // ------------------------------ 상품 상세선택 저장 로직 ------------------------------
+    public void addList(DetailsReqeust detailsRequest) {
 
         if (detailsRequest != null && !detailsRequest.getDetails().isEmpty()) {
             for (int i = 0; i < detailsRequest.getDetails().size(); i++) {
 
-            Details firstDetail = detailsRequest.getDetails().get(i); // 0번째 Detail 객체를 가져옵니다.
-                // 이제 firstDetail을 사용하여 필요한 작업을 수행하세요.
+            Details firstDetail = detailsRequest.getDetails().get(i);
 
-                // 예시: 첫 번째 Detail의 정보를 출력합니다.
-                System.out.println("상품명: " + firstDetail.getProductName());
+                System.out.println("추가상품: " + firstDetail.getProductName());
                 System.out.println("색상: " + firstDetail.getColor());
                 System.out.println("축: " + firstDetail.getAxis());
                 System.out.println("선: " + firstDetail.getLine());
 
-                // mapper의 addList 메소드를 호출하여 모든 Details 리스트를 추가합니다.
             mapper.addList(firstDetail);
             }
         }
     }
-
+    // ------------------------------ 상품 상세선택 보기 로직 ------------------------------
     public List<Details> getDetailsByBoardId(Integer boardId) {
         System.out.println("boardId = " + boardId);
         return mapper.getDetailsByBoardId(boardId);
