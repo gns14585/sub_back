@@ -4,6 +4,7 @@ import com.example.subback.controller.BoardController;
 import com.example.subback.domain.BoardImg;
 import com.example.subback.domain.Details;
 import com.example.subback.dto.Board;
+import com.example.subback.dto.BoardRequest;
 import com.example.subback.mapper.BoardMapper;
 import com.example.subback.mapper.ImgMapper;
 import lombok.RequiredArgsConstructor;
@@ -161,5 +162,9 @@ public class BoardService {
     public List<Details> getDetailsByBoardId(Integer boardId) {
         System.out.println("boardId = " + boardId);
         return mapper.getDetailsByBoardId(boardId);
+    }
+
+    public void addBoard(BoardRequest boardRequest) {
+        System.out.println("boardRequest = " + boardRequest);
     }
 }

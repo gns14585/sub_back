@@ -2,6 +2,7 @@ package com.example.subback.controller;
 
 import com.example.subback.domain.Details;
 import com.example.subback.dto.Board;
+import com.example.subback.dto.BoardRequest;
 import com.example.subback.service.BoardService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ public class BoardController {
     private final BoardService service;
 
     @PostMapping("add")
-    public ResponseEntity add(Board board, @RequestBody DetailsReqeust details,
+    public ResponseEntity add(Board board, @RequestBody BoardRequest boardRequest,
                               @RequestParam(value = "mainImg[]", required = false) MultipartFile[] mainImg) throws IOException {
 
 
         System.out.println("board = " + board);
-//        System.out.println("board = " + board);
+        System.out.println("boardRequest = " + boardRequest);
         // 저장버튼 클릭 시 0.3초 버튼 잠금
 
         try {
@@ -41,11 +42,14 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
         if (service.save(board, mainImg)) {
-            service.addList(details);
+            service.addBoard(boardRequest);
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.internalServerError().build();
         }
+
+
+
     }
 
     @PostMapping("addList")
