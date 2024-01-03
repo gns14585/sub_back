@@ -10,14 +10,14 @@ import java.util.List;
 public interface BoardMapper {
 
     @Insert("""
-            INSERT INTO board(title, content, writer)
-            VALUES (#{title}, #{content}, #{writer})
+            INSERT INTO board(title, content, price)
+            VALUES (#{title}, #{content}, #{price})
             """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Board board);
 
     @Select("""
-            SELECT b.id, b.title, b.content, b.writer, b.inserted,
+            SELECT b.id, b.title, b.content, b.price, b.inserted,
                    CONCAT(#{urlPrefix}, 'prj1/', bi.boardId, '/', bi.name) as imageUrl
             FROM board b
             LEFT JOIN boardimg bi ON b.id = bi.boardId
@@ -26,7 +26,7 @@ public interface BoardMapper {
     List<Board> list();
 
     @Select("""
-            SELECT id, title, content, writer, inserted
+            SELECT id, title, content, price, inserted
             FROM board
             WHERE id = #{id}
             """)
@@ -43,7 +43,7 @@ public interface BoardMapper {
             SET 
                 title = #{title},
                 content = #{content},
-                writer = #{writer}
+                price = #{price}
             WHERE id = #{id}
             """)
     int updateById(Board board);
@@ -60,4 +60,10 @@ public interface BoardMapper {
             WHERE boardId = #{id}
             """)
     List<Details> getDetailsByBoardId(Integer id);
+
+    @Delete("""
+        DELETE FROM boardaddlist
+        WHERE boardId = #{boardId}
+        """)
+    void deleteDetailsByBoardId(Integer boardId);
 }

@@ -35,6 +35,7 @@ public class BoardController {
         }
         // 상품 저장로직
         if (service.save(board, mainImg)) {
+            // board 테이블에 있는 id를 넣어줌
             return ResponseEntity.ok(board.getId());
         } else {
             return ResponseEntity.internalServerError().build();
@@ -44,7 +45,6 @@ public class BoardController {
     // ------------------------------ 상품 상세선택 저장 ------------------------------
     @PostMapping("addList")
     public void addList(@RequestBody DetailsReqeust details) {
-        System.out.println("details = " + details);
         service.addList(details);
     }
 
@@ -65,7 +65,6 @@ public class BoardController {
     @GetMapping("details/{id}")
     public ResponseEntity<List<Details>> getDetailsByBoardId(@PathVariable Integer id) {
         List<Details> details = service.getDetailsByBoardId(id);
-        System.out.println("details = " + details);
         return ResponseEntity.ok(details);
     }
 

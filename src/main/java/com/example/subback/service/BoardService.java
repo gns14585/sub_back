@@ -78,7 +78,7 @@ public class BoardService {
         if (board.getTitle() == null || board.getTitle().isBlank()) {
             return false;
         }
-        if (board.getWriter() == null || board.getWriter().isBlank()) {
+        if (board.getPrice() == null) {
             return false;
         }
         return true;
@@ -112,6 +112,9 @@ public class BoardService {
 
     // ------------------------------ 상품 삭제 로직 ------------------------------
     public void remove(Integer id) {
+
+        // boardaddlist 테이블에서 boardId를 참조하는 행 삭제
+        mapper.deleteDetailsByBoardId(id);
 
         deleteMainImg(id);
 
@@ -154,7 +157,6 @@ public class BoardService {
 
     // ------------------------------ 상품 상세선택 보기 로직 ------------------------------
     public List<Details> getDetailsByBoardId(Integer boardId) {
-        System.out.println("boardId = " + boardId);
         return mapper.getDetailsByBoardId(boardId);
     }
 }
