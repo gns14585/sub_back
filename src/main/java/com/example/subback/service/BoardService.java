@@ -1,6 +1,8 @@
 package com.example.subback.service;
 
+import com.example.subback.controller.BoardController;
 import com.example.subback.domain.BoardImg;
+import com.example.subback.domain.Details;
 import com.example.subback.dto.Board;
 import com.example.subback.mapper.BoardMapper;
 import com.example.subback.mapper.ImgMapper;
@@ -18,6 +20,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -133,5 +136,30 @@ public class BoardService {
 
     public boolean update(Board board) {
         return mapper.updateById(board) == 1;
+    }
+
+    public void addList(BoardController.DetailsReqeust detailsRequest) {
+
+        if (detailsRequest != null && !detailsRequest.getDetails().isEmpty()) {
+            for (int i = 0; i < detailsRequest.getDetails().size(); i++) {
+
+            Details firstDetail = detailsRequest.getDetails().get(i); // 0번째 Detail 객체를 가져옵니다.
+                // 이제 firstDetail을 사용하여 필요한 작업을 수행하세요.
+
+                // 예시: 첫 번째 Detail의 정보를 출력합니다.
+                System.out.println("상품명: " + firstDetail.getProductName());
+                System.out.println("색상: " + firstDetail.getColor());
+                System.out.println("축: " + firstDetail.getAxis());
+                System.out.println("선: " + firstDetail.getLine());
+
+                // mapper의 addList 메소드를 호출하여 모든 Details 리스트를 추가합니다.
+            mapper.addList(firstDetail);
+            }
+        }
+    }
+
+    public List<Details> getDetailsByBoardId(Integer boardId) {
+        System.out.println("boardId = " + boardId);
+        return mapper.getDetailsByBoardId(boardId);
     }
 }

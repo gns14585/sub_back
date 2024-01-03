@@ -1,6 +1,6 @@
 package com.example.subback.mapper;
 
-import com.example.subback.domain.BoardImg;
+import com.example.subback.domain.Details;
 import com.example.subback.dto.Board;
 import org.apache.ibatis.annotations.*;
 
@@ -47,4 +47,17 @@ public interface BoardMapper {
             WHERE id = #{id}
             """)
     int updateById(Board board);
+
+    @Insert("""
+            INSERT INTO boardaddlist(productName, color, axis, line, boardId)
+            VALUES (#{productName}, #{color}, #{axis}, #{line}, #{boardId})
+            """)
+    void addList(Details details);
+
+    @Select("""
+            SELECT *
+            FROM boardaddlist
+            WHERE boardId = #{id}
+            """)
+    List<Details> getDetailsByBoardId(Integer id);
 }

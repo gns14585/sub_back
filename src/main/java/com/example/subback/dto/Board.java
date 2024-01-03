@@ -1,6 +1,7 @@
 package com.example.subback.dto;
 
 import com.example.subback.domain.BoardImg;
+import com.example.subback.domain.Details;
 import lombok.Data;
 
 import java.util.List;
@@ -12,5 +13,6 @@ public class Board {
     private String content;
     private String writer;
     private String inserted;
+//    private List<Details> details;
     private List<BoardImg> mainImgs;
 }
