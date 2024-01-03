@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class BoardService {
 
         return cnt == 1;
     }
+
     // ------------------------------ 상품 이미지 업로드 로직 ------------------------------
     private void upload(Integer boardId, MultipartFile mainImg) throws IOException {
 
@@ -64,6 +66,7 @@ public class BoardService {
 
         s3.putObject(objectRequest, RequestBody.fromInputStream(mainImg.getInputStream(), mainImg.getSize()));
     }
+
     // ------------------------------ 상품 저장시 검증 로직 ------------------------------
     public boolean validate(Board board) {
         if (board == null) {
@@ -141,17 +144,14 @@ public class BoardService {
         if (detailsRequest != null && !detailsRequest.getDetails().isEmpty()) {
             for (int i = 0; i < detailsRequest.getDetails().size(); i++) {
 
-            Details firstDetail = detailsRequest.getDetails().get(i);
+                Details firstDetail = detailsRequest.getDetails().get(i);
 
-                System.out.println("추가상품: " + firstDetail.getProductName());
-                System.out.println("색상: " + firstDetail.getColor());
-                System.out.println("축: " + firstDetail.getAxis());
-                System.out.println("선: " + firstDetail.getLine());
-
-            mapper.addList(firstDetail);
+                mapper.addList(firstDetail);
+                System.out.println("firstDetail = " + firstDetail);
             }
         }
     }
+
     // ------------------------------ 상품 상세선택 보기 로직 ------------------------------
     public List<Details> getDetailsByBoardId(Integer boardId) {
         System.out.println("boardId = " + boardId);

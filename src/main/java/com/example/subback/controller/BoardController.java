@@ -35,7 +35,7 @@ public class BoardController {
         }
         // 상품 저장로직
         if (service.save(board, mainImg)) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(board.getId());
         } else {
             return ResponseEntity.internalServerError().build();
         }
