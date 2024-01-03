@@ -49,8 +49,8 @@ public interface BoardMapper {
     int updateById(Board board);
 
     @Insert("""
-            INSERT INTO boardaddlist(productName, color, axis, line, boardId)
-            VALUES (#{productName}, #{color}, #{axis}, #{line}, #{boardId})
+            INSERT INTO boardaddlist(color, axis, line, boardId)
+            VALUES (#{color}, #{axis}, #{line}, #{boardId})
             """)
     void addList(Details details);
 
