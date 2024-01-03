@@ -24,12 +24,11 @@ public class BoardController {
     private final BoardService service;
 
     @PostMapping("add")
-    public ResponseEntity add(Board board, @RequestBody BoardRequest boardRequest,
+    public ResponseEntity add(Board board,
                               @RequestParam(value = "mainImg[]", required = false) MultipartFile[] mainImg) throws IOException {
 
 
         System.out.println("board = " + board);
-        System.out.println("boardRequest = " + boardRequest);
         // 저장버튼 클릭 시 0.3초 버튼 잠금
 
         try {
