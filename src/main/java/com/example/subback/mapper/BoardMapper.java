@@ -17,12 +17,10 @@ public interface BoardMapper {
     int insert(Board board);
 
     @Select("""
-            SELECT b.id, b.title, b.content, b.price, b.inserted,
-                   CONCAT(#{urlPrefix}, 'prj1/', bi.boardId, '/', bi.name) as imageUrl
-            FROM board b
-            LEFT JOIN boardimg bi ON b.id = bi.boardId
-            ORDER BY b.inserted DESC
-            """)
+        SELECT id, title, content, price, inserted
+        FROM board
+        ORDER BY inserted DESC
+        """)
     List<Board> list();
 
     @Select("""
