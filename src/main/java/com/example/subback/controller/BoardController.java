@@ -48,7 +48,6 @@ public class BoardController {
         service.addList(details);
     }
 
-
     // ------------------------------ 상품 리스트 ------------------------------
     @GetMapping("list")
     public List<Board> list() {

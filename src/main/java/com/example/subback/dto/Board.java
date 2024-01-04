@@ -13,6 +13,5 @@ public class Board {
     private String content;
     private Integer price;
     private String inserted;
-//    private List<Details> details;
     private List<BoardImg> mainImgs;
 }

@@ -38,32 +38,23 @@ public class BoardService {
     // ------------------------------ 상품 저장 로직 ------------------------------
     public boolean save(Board board, MultipartFile[] mainImg) throws IOException {
         int cnt = mapper.insert(board);
-
-        // boardFile 테이블에 mainImg 정보 저장
         if (mainImg != null) {
             for (int i = 0; i < mainImg.length; i++) {
                 mainImgMapper.insert(board.getId(), mainImg[i].getOriginalFilename());
-
                 upload(board.getId(), mainImg[i]);
-
             }
         }
-        // 실제 이미지파일 S3 Bucket에 upload
-
         return cnt == 1;
     }
 
     // ------------------------------ 상품 이미지 업로드 로직 ------------------------------
     private void upload(Integer boardId, MultipartFile mainImg) throws IOException {
-
         String key = "prj1/" + boardId + "/" + mainImg.getOriginalFilename();
-
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
                 .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
-
         s3.putObject(objectRequest, RequestBody.fromInputStream(mainImg.getInputStream(), mainImg.getSize()));
     }
 
@@ -99,9 +90,7 @@ public class BoardService {
     // ------------------------------ 상품 보기 로직 ------------------------------
     public Board get(Integer id) {
         Board board = mapper.selectById(id);
-
         List<BoardImg> boardImgs = mainImgMapper.selectNamesByBoardId(id);
-
         for (BoardImg boardImg : boardImgs) {
             String url = urlPrefix + "prj1/" + id + "/" + boardImg.getName();
             boardImg.setUrl(url);
@@ -112,19 +101,14 @@ public class BoardService {
 
     // ------------------------------ 상품 삭제 로직 ------------------------------
     public void remove(Integer id) {
-
-        // boardaddlist 테이블에서 boardId를 참조하는 행 삭제
-        mapper.deleteDetailsByBoardId(id);
-
-        deleteMainImg(id);
-
+        mapper.deleteDetailsByBoardId(id); // 상세선택 삭제
+        deleteMainImg(id); // 이미지 삭제
         mapper.deleteById(id); // 상품삭제
     }
 
     // ------------------------------ 상품 삭제 시 이미지 삭제 로직 ------------------------------
     private void deleteMainImg(Integer boardId) {
         List<BoardImg> boardImgs = mainImgMapper.selectNamesByBoardId(boardId);
-
         for (BoardImg img : boardImgs) {
             String key = "prj1/" + boardId + "/" + img.getName();
             DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
@@ -143,12 +127,9 @@ public class BoardService {
 
     // ------------------------------ 상품 상세선택 저장 로직 ------------------------------
     public void addList(DetailsReqeust detailsRequest) {
-
         if (detailsRequest != null && !detailsRequest.getDetails().isEmpty()) {
             for (int i = 0; i < detailsRequest.getDetails().size(); i++) {
-
                 Details firstDetail = detailsRequest.getDetails().get(i);
-
                 mapper.addList(firstDetail);
                 System.out.println("firstDetail = " + firstDetail);
             }
