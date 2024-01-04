@@ -122,7 +122,7 @@ public class BoardService {
         mapper.deleteById(id); // 상품삭제
     }
 
-    // ------------------------------ 상품 삭제 시 이미지 삭제 로직 ------------------------------
+    // ------------------------------ 상품 삭제 시 s3,db 이미지 삭제 로직 ------------------------------
     private void deleteMainImg(Integer boardId) {
         List<BoardImg> boardImgs = mainImgMapper.selectNamesByBoardId(boardId);
         for (BoardImg img : boardImgs) {
@@ -137,7 +137,35 @@ public class BoardService {
     }
 
     // ------------------------------ 상품 수정 로직 ------------------------------
-    public boolean update(Board board) {
+    public boolean update(Board board,
+                          List<Integer> removeMainImgs,
+                          MultipartFile[] uploadMainImg) throws IOException {
+        // 이미지파일 지우기
+        if (removeMainImgs != null) {
+            for (Integer id : removeMainImgs) {
+                // s3에서 지우기
+                BoardImg mainImg = mainImgMapper.selectById(id);
+                String key = "prj1/" + board.getId() + "/" + mainImg.getName();
+                DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .build();
+                s3.deleteObject(objectRequest);
+                // db에서 지우기
+                mainImgMapper.deleteById(id);
+            }
+        }
+
+        // 이미지파일 추가하기
+        if (uploadMainImg != null) {
+            // s3에 추가하기
+            for (MultipartFile file : uploadMainImg) {
+                upload(board.getId(), file);
+                // db에 추가하기
+                mainImgMapper.insert(board.getId(), file.getOriginalFilename());
+            }
+        }
+
         return mapper.updateById(board) == 1;
     }
 

@@ -36,4 +36,17 @@ public interface ImgMapper {
             WHERE boardId = #{boardId}
             """)
     void deleteByBoardId(Integer boardId);
+
+    @Select("""
+            SELECT *
+            FROM boardimg 
+            WHERE id = #{id}
+            """)
+    BoardImg selectById(Integer id);
+
+    @Delete("""
+            DELETE FROM boardimg
+            WHERE id = #{id}
+            """)
+    void deleteById(Integer id);
 }
