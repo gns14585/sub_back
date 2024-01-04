@@ -37,14 +37,30 @@ public class BoardService {
 
     // ------------------------------ 상품 저장 로직 ------------------------------
     public boolean save(Board board, MultipartFile[] mainImg) throws IOException {
-        int cnt = mapper.insert(board);
+        // 상품 정보를 먼저 저장
+        if (mapper.insert(board) != 1) {
+            return false;
+        }
+        Integer boardId = board.getId(); // 생성된 상품 ID
+
+        // 이미지 정보 저장
         if (mainImg != null) {
-            for (int i = 0; i < mainImg.length; i++) {
-                mainImgMapper.insert(board.getId(), mainImg[i].getOriginalFilename());
-                upload(board.getId(), mainImg[i]);
+            for (MultipartFile img : mainImg) {
+                mainImgMapper.insert(boardId, img.getOriginalFilename());
+                upload(boardId, img);
             }
         }
-        return cnt == 1;
+        return true;
+    }
+
+    // ------------------------------ 상품 상세선택 저장 로직 ------------------------------
+    public void addList(DetailsReqeust detailsRequest) {
+        if (detailsRequest != null && !detailsRequest.getDetails().isEmpty()) {
+            for (int i = 0; i < detailsRequest.getDetails().size(); i++) {
+                Details firstDetail = detailsRequest.getDetails().get(i);
+                mapper.addList(firstDetail);
+            }
+        }
     }
 
     // ------------------------------ 상품 이미지 업로드 로직 ------------------------------
@@ -123,17 +139,6 @@ public class BoardService {
     // ------------------------------ 상품 수정 로직 ------------------------------
     public boolean update(Board board) {
         return mapper.updateById(board) == 1;
-    }
-
-    // ------------------------------ 상품 상세선택 저장 로직 ------------------------------
-    public void addList(DetailsReqeust detailsRequest) {
-        if (detailsRequest != null && !detailsRequest.getDetails().isEmpty()) {
-            for (int i = 0; i < detailsRequest.getDetails().size(); i++) {
-                Details firstDetail = detailsRequest.getDetails().get(i);
-                mapper.addList(firstDetail);
-                System.out.println("firstDetail = " + firstDetail);
-            }
-        }
     }
 
     // ------------------------------ 상품 상세선택 보기 로직 ------------------------------
