@@ -13,5 +13,6 @@ public class Board {
     private String content;
     private Integer price;
     private String inserted;
+    private String manufacturer;
     private List<BoardImg> mainImgs;
 }

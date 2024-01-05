@@ -76,12 +76,15 @@ public class BoardController {
     // ------------------------------ 상품 수정 ------------------------------
     @PutMapping("edit")
     public ResponseEntity update(Board board,
+                                 Details details,
                                  @RequestParam(value = "removeMainImgs[]", required = false) List<Integer> removeMainImgs,
                                  @RequestParam(value = "mainImg[]", required = false) MultipartFile[] uploadMainImg ) throws IOException {
-        if (service.update(board, removeMainImgs, uploadMainImg)) {
+        System.out.println("board = " + board);
+        if (service.update(board,details, removeMainImgs, uploadMainImg)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.internalServerError().build();
         }
+
     }
 }

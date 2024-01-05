@@ -138,6 +138,7 @@ public class BoardService {
 
     // ------------------------------ 상품 수정 로직 ------------------------------
     public boolean update(Board board,
+                          Details details,
                           List<Integer> removeMainImgs,
                           MultipartFile[] uploadMainImg) throws IOException {
         // 이미지파일 지우기
@@ -166,6 +167,12 @@ public class BoardService {
             }
         }
 
+        // 상품 상세선택 수정 로직
+        if (details != null) {
+            mapper.updateDetails(details);
+        }
+
+        // 상품 정보 수정 로직
         return mapper.updateById(board) == 1;
     }
 
