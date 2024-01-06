@@ -80,6 +80,7 @@ public class BoardController {
                                  @RequestParam(value = "removeMainImgs[]", required = false) List<Integer> removeMainImgs,
                                  @RequestParam(value = "mainImg[]", required = false) MultipartFile[] uploadMainImg ) throws IOException {
         System.out.println("board = " + board);
+        System.out.println("details = " + details);
         if (service.update(board,details, removeMainImgs, uploadMainImg)) {
             return ResponseEntity.ok().build();
         } else {
