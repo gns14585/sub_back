@@ -76,16 +76,24 @@ public class BoardController {
     // ------------------------------ 상품 수정 ------------------------------
     @PutMapping("edit")
     public ResponseEntity update(Board board,
-                                 Details details,
                                  @RequestParam(value = "removeMainImgs[]", required = false) List<Integer> removeMainImgs,
                                  @RequestParam(value = "mainImg[]", required = false) MultipartFile[] uploadMainImg ) throws IOException {
         System.out.println("board = " + board);
-        System.out.println("details = " + details);
-        if (service.update(board,details, removeMainImgs, uploadMainImg)) {
+        if (service.update(board,removeMainImgs, uploadMainImg)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.internalServerError().build();
         }
+    }
 
+    // ------------------------------ 상품 상세정보 수정 ------------------------------
+    @PutMapping("updateDetails")
+    public ResponseEntity<?> updateDetails(@RequestBody List<Details> detailsList) {
+        if (detailsList == null || detailsList.isEmpty()) {
+            return ResponseEntity.badRequest().body("Details list is empty or null");
+        }
+        System.out.println("detailsList = " + detailsList);
+        service.updateDetails(detailsList);
+        return ResponseEntity.ok().build();
     }
 }

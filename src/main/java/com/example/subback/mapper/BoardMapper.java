@@ -76,4 +76,10 @@ public interface BoardMapper {
             WHERE boardId = #{boardId}
             """)
     void updateDetails(Details details);
+
+    @Insert("""
+            INSERT INTO boardaddlist(color, axis, line, inch) 
+            VALUES (#{color}, #{axis}, #{line}, #{inch})
+            """)
+    void insertDetails(Details details);
 }

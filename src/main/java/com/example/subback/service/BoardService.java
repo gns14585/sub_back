@@ -42,7 +42,6 @@ public class BoardService {
             return false;
         }
         Integer boardId = board.getId(); // 생성된 상품 ID
-
         // 이미지 정보 저장
         if (mainImg != null) {
             for (MultipartFile img : mainImg) {
@@ -79,13 +78,16 @@ public class BoardService {
         if (board == null) {
             return false;
         }
-        if (board.getContent() == null || board.getContent().isBlank()) {
+        if (board.getTitle() == null || board.getTitle().isBlank()) { // 상품명
             return false;
         }
-        if (board.getTitle() == null || board.getTitle().isBlank()) {
+        if (board.getContent() == null || board.getContent().isBlank()) { // 상품설명
             return false;
         }
-        if (board.getPrice() == null) {
+        if (board.getManufacturer() == null || board.getManufacturer().isBlank()) { // 제조사
+            return false;
+        }
+        if (board.getPrice() == null) { // 금액
             return false;
         }
         return true;
@@ -115,6 +117,11 @@ public class BoardService {
         return board;
     }
 
+    // ------------------------------ 상품 상세선택 보기 로직 ------------------------------
+    public List<Details> getDetailsByBoardId(Integer boardId) {
+        return mapper.getDetailsByBoardId(boardId);
+    }
+
     // ------------------------------ 상품 삭제 로직 ------------------------------
     public void remove(Integer id) {
         mapper.deleteDetailsByBoardId(id); // 상세선택 삭제
@@ -138,7 +145,6 @@ public class BoardService {
 
     // ------------------------------ 상품 수정 로직 ------------------------------
     public boolean update(Board board,
-                          Details details,
                           List<Integer> removeMainImgs,
                           MultipartFile[] uploadMainImg) throws IOException {
         // 이미지파일 지우기
@@ -156,7 +162,6 @@ public class BoardService {
                 mainImgMapper.deleteById(id);
             }
         }
-
         // 이미지파일 추가하기
         if (uploadMainImg != null) {
             // s3에 추가하기
@@ -166,18 +171,18 @@ public class BoardService {
                 mainImgMapper.insert(board.getId(), file.getOriginalFilename());
             }
         }
-
-        // 상품 상세선택 수정 로직
-        if (details != null) {
-            mapper.updateDetails(details);
-        }
-
         // 상품 정보 수정 로직
         return mapper.updateById(board) == 1;
     }
 
-    // ------------------------------ 상품 상세선택 보기 로직 ------------------------------
-    public List<Details> getDetailsByBoardId(Integer boardId) {
-        return mapper.getDetailsByBoardId(boardId);
+    // ------------------------------ 상품 상세선택 수정 로직 ------------------------------
+    public void updateDetails(List<Details> detailsList) {
+        for (Details details : detailsList) {
+            if (details.getBoardId() == null) {
+                mapper.insertDetails(details);
+            } else {
+                mapper.updateDetails(details);
+            }
+        }
     }
 }
