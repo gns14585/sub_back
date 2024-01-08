@@ -54,13 +54,21 @@ public class BoardService {
 
     // ------------------------------ 상품 상세선택 저장 로직 ------------------------------
     public void addList(DetailsReqeust detailsRequest) {
-        if (detailsRequest != null && !detailsRequest.getDetails().isEmpty()) {
-            for (int i = 0; i < detailsRequest.getDetails().size(); i++) {
-                Details firstDetail = detailsRequest.getDetails().get(i);
-                mapper.addList(firstDetail);
+        if (detailsRequest != null && detailsRequest.getDetails() != null) {
+            for (Details detail : detailsRequest.getDetails()) {
+                // 각 필드가 null인지 확인하고, null이면 빈 문자열로 설정
+                detail.setColor(detail.getColor() != null ? detail.getColor() : "");
+                detail.setAxis(detail.getAxis() != null ? detail.getAxis() : "");
+                detail.setLine(detail.getLine() != null ? detail.getLine() : "");
+                detail.setInch(detail.getInch() != null ? detail.getInch() : "");
+                // 기타 필드에 대해서도 동일한 작업을 수행
+
+                // DB에 저장
+                mapper.addList(detail);
             }
         }
     }
+
 
     // ------------------------------ 상품 이미지 업로드 로직 ------------------------------
     private void upload(Integer boardId, MultipartFile mainImg) throws IOException {

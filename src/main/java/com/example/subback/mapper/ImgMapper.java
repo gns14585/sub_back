@@ -24,13 +24,6 @@ public interface ImgMapper {
             """)
     List<BoardImg> selectNamesByBoardId(Integer boardId);
 
-    @Select("""
-            SELECT id, name
-            FROM boardimg
-            WHERE id = #{id}
-            """)
-    BoardImg selectNameById(Integer id);
-
     @Delete("""
             DELETE FROM boardimg
             WHERE boardId = #{boardId}
