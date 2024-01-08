@@ -17,7 +17,7 @@ public interface BoardMapper {
     int insert(Board board);
 
     @Select("""
-        SELECT id, title, content, price, inserted
+        SELECT id, title, content, price, inserted, manufacturer
         FROM board
         ORDER BY inserted DESC
         """)
