@@ -10,23 +10,21 @@ import java.util.List;
 public interface BoardMapper {
 
     @Insert("""
-            INSERT INTO board(title, content, writer)
-            VALUES (#{title}, #{content}, #{writer})
+            INSERT INTO board(title, content, price, manufacturer)
+            VALUES (#{title}, #{content}, #{price}, #{manufacturer})
             """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Board board);
 
     @Select("""
-            SELECT b.id, b.title, b.content, b.writer, b.inserted,
-                   CONCAT(#{urlPrefix}, 'prj1/', bi.boardId, '/', bi.name) as imageUrl
-            FROM board b
-            LEFT JOIN boardimg bi ON b.id = bi.boardId
-            ORDER BY b.inserted DESC
-            """)
+        SELECT id, title, content, price, inserted, manufacturer
+        FROM board
+        ORDER BY inserted DESC
+        """)
     List<Board> list();
 
     @Select("""
-            SELECT id, title, content, writer, inserted
+            SELECT id, title, content, price, inserted, manufacturer
             FROM board
             WHERE id = #{id}
             """)
@@ -43,14 +41,15 @@ public interface BoardMapper {
             SET 
                 title = #{title},
                 content = #{content},
-                writer = #{writer}
+                manufacturer = #{manufacturer},
+                price = #{price}
             WHERE id = #{id}
             """)
     int updateById(Board board);
 
     @Insert("""
-            INSERT INTO boardaddlist(productName, color, axis, line, boardId)
-            VALUES (#{productName}, #{color}, #{axis}, #{line}, #{boardId})
+            INSERT INTO boardaddlist(color, axis, line, boardId, inch)
+            VALUES (#{color}, #{axis}, #{line}, #{boardId}, #{inch})
             """)
     void addList(Details details);
 
@@ -60,4 +59,27 @@ public interface BoardMapper {
             WHERE boardId = #{id}
             """)
     List<Details> getDetailsByBoardId(Integer id);
+
+    @Delete("""
+        DELETE FROM boardaddlist
+        WHERE boardId = #{boardId}
+        """)
+    void deleteDetailsByBoardId(Integer boardId);
+
+    @Update("""
+            UPDATE boardaddlist
+            SET 
+                color = #{color},
+                axis = #{axis},
+                line = #{line},
+                inch = #{inch}
+            WHERE boardId = #{boardId}
+            """)
+    void updateDetails(Details details);
+
+    @Insert("""
+            INSERT INTO boardaddlist(color, axis, line, inch) 
+            VALUES (#{color}, #{axis}, #{line}, #{inch})
+            """)
+    void insertDetails(Details details);
 }

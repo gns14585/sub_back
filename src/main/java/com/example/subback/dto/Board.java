@@ -11,8 +11,8 @@ public class Board {
     private Integer id;
     private String title;
     private String content;
-    private String writer;
+    private Integer price;
     private String inserted;
-//    private List<Details> details;
+    private String manufacturer;
     private List<BoardImg> mainImgs;
 }
