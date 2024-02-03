@@ -173,6 +173,7 @@ public class BoardService {
         }
         // 상품 정보 수정 로직
         return mapper.updateById(board) == 1;
+
     }
 
     // ------------------------------ 상품 상세선택 수정 로직 ------------------------------
