@@ -43,6 +43,7 @@ public class BoardController {
     }
 
 
+
     // ------------------------------ 상품 상세선택 저장 ------------------------------
     @PostMapping("addList")
     public void addList(@RequestBody DetailsReqeust details) {
